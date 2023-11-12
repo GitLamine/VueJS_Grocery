@@ -1,73 +1,73 @@
 let app = Vue.createApp({
-    data(){            // Default Functions to access any data
-      return {
-        showsidebar: false,
-        inventory: [],   //dictionary for all products   
-        cart: {}
-      }
-    },
-    computed: {
-      totalQuantity(){
-        // return [1,2,3,4,5].reduce((accu, curr) => {
-        //   return accu+curr
-        // }, 0)
-        console.log(Object.values(this.cart))
-        return Object.values(this.cart).reduce((accu, curr) => {
-          return accu+ curr
-        }, 0)
-      }
-    },
-    methods: {
-      addTocart(name, index){
-        console.log(name, index)
-        if (!this.cart[name]) 
-          this.cart[name] = 0
-        this.cart[name] = this.inventory[index].quantity
-        console.log(this.cart)
-        this.inventory[index].quantity = 0
-
-        // console.log(Object.keys(this.cart)) // checking Object.keys/entries/values
-      }, 
-      toggleSidebar(){
-        this.showsidebar = !this.showsidebar
-      },
-      removeitem(name){
-        delete this.cart[name]
-      }
-    },
-    async mounted(){
-      const res = await fetch('./food.json')
-      const data = await res.json()
-      this.inventory = data
+  data() {            // Default Functions to access any data
+    return {
+      showsidebar: false,
+      inventory: [],   //dictionary for all products   
+      cart: {}
     }
-  })
+  },
+  computed: {
+    totalQuantity() {
+      // return [1,2,3,4,5].reduce((accu, curr) => {
+      //   return accu+curr
+      // }, 0)
+      console.log(Object.values(this.cart))
+      return Object.values(this.cart).reduce((accu, curr) => {
+        return accu + curr
+      }, 0)
+    }
+  },
+  methods: {
+    addTocart(name, index) {
+      console.log(name, index)
+      if (!this.cart[name])
+        this.cart[name] = 0
+      this.cart[name] = this.inventory[index].quantity
+      console.log(this.cart)
+      this.inventory[index].quantity = 0
+
+      // console.log(Object.keys(this.cart)) // checking Object.keys/entries/values
+    },
+    toggleSidebar() {
+      this.showsidebar = !this.showsidebar
+    },
+    removeitem(name) {
+      delete this.cart[name]
+    }
+  },
+  async mounted() {
+    const res = await fetch('./food.json')
+    const data = await res.json()
+    this.inventory = data
+  }
+})
 
 
-  // use as a component 
-  app.component('sidebar', {
-    props: ['toggle', 'cart', 'inventory', 'remove'],
-    computed: {
-      // totalQuantity(){
-      //   return Object.values(this.cart).reduce((accu, curr) => {
-      //     return accu+ curr
-      //   }, 0)
-      // }
+// use as a component 
+app.component('sidebar', {
+  props: ['toggle', 'cart', 'inventory', 'remove'],
+  computed: {
+    // totalQuantity(){
+    //   return Object.values(this.cart).reduce((accu, curr) => {
+    //     return accu+ curr
+    //   }, 0)
+    // }
+  },
+  methods: {
+    getprice(name) {
+      const expected_product = this.inventory.find((product) => {
+        return product.name === name
+      })
+      return expected_product.price.USD
     },
-    methods:{
-      getprice(name){
-        const expected_product = this.inventory.find((product)=>{
-          return product.name === name
-        })
-        return expected_product.price.USD
-      },
-      calculateTotal(){
-        const total = Object.entries(this.cart).reduce((accu, curr, index) => {
-          return accu+ (curr[1] * this.getprice(curr[0]))
-        }, 0)
-        return total.toFixed(2)
-      }
-    },
-    template: `
+    calculateTotal() {
+      const total = Object.entries(this.cart).reduce((accu, curr, index) => {
+        return accu + (curr[1] * this.getprice(curr[0]))
+      }, 0)
+      return total.toFixed(2)
+    }
+  },
+  template: `
       <aside class="cart-container">
       <div class="cart">
         <h1 class="cart-title spread">
@@ -115,6 +115,6 @@ let app = Vue.createApp({
       </div>
     </aside>
     `
-  })
+})
 
-  app.mount('#app')
+app.mount('#index')
